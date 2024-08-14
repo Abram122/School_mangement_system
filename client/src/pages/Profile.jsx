@@ -3,6 +3,7 @@ import Verification from "../asset/images/verify.png";
 import Navbar from "../compoents/Navbar";
 import axios from "axios";
 import Loader from "../compoents/Loader";
+import Cookies from 'js-cookie';
 const Profile = () => {
     const [data, setData] = useState('')
     const [loader, setLoader] = useState(false)
@@ -26,7 +27,7 @@ const Profile = () => {
                 loader ? <Loader text="Getting data..." /> :
                     data &&
                     <div className="profile w-[90%] mt-20 m-auto shadow-lg">
-                        <div className="header bg-black text-white text-center py-4 w-full m-auto">
+                            <div className="header bg-lime-500 text-white text-center py-4 w-full m-auto">
                             <h1 className="text-xl md:text-2xl text-center">My Profile</h1>
                         </div>
                         <div className="md:flex flex-wrap gap-4 items-center py-3">

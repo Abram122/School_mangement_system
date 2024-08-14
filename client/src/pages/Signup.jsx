@@ -4,6 +4,7 @@ import upload from "../asset/images/upload.webp";
 import { Link } from "react-router-dom";
 import Navbar from "../compoents/Navbar";
 import Loader from "../compoents/Loader";
+import { FaEye, FaEyeSlash } from 'react-icons/fa'; // Make sure to install react-icons
 
 export default function Signup() {
     const [name, setName] = useState('');
@@ -16,7 +17,15 @@ export default function Signup() {
     const [loading, setLoading] = useState(false);
     const [errors, setErrors] = useState({});
     const [success, setSuccess] = useState('');
+    const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+    const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false);
 
+    const togglePasswordVisibility = () => {
+        setIsPasswordVisible((prevState) => !prevState);
+    };
+    const toggleConfirmPasswordVisibility = () => {
+        setIsConfirmPasswordVisible((prevState) => !prevState);
+    };
     const handleImageChange = (e) => {
         const file = e.target.files[0];
         setImg(URL.createObjectURL(file));
@@ -83,6 +92,7 @@ export default function Signup() {
             setFileimg('');
             setImg('');
         } catch (err) {
+            console.log(err)
             if (err.response && err.response.data && err.response.data.error) {
                 setErrors({ global: err.response.data.error });
             } else {
@@ -98,7 +108,7 @@ export default function Signup() {
             <Navbar />
             {loading ? <Loader text="Signing up..." /> :
                 <div className="signup w-[90%] mt-20 m-auto shadow-lg min-h-[90vh]">
-                    <div className="header bg-black text-white text-center py-4">
+                    <div className="header bg-lime-500 text-white text-center py-4">
                         <div className="image-upload">
                             <label htmlFor="file-input">
                                 {
@@ -145,22 +155,42 @@ export default function Signup() {
                             </div>
                             <div className="form-group w-[75%] m-auto mt-4">
                                 <label className="md:text-xl">Password</label>
-                                <input
-                                    type="password"
-                                    className={`w-full py-3 px-4 mt-2 bg-gray-200 ${errors.password ? 'border-red-500' : ''}`}
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                />
+                                <div className="relative">
+                                    <input
+                                        type={isPasswordVisible ? 'text' : 'password'}
+                                        className="w-full py-3 px-4 mt-2 bg-gray-200 pr-10"
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        value={password}
+                                        required
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={togglePasswordVisibility}
+                                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-700"
+                                    >
+                                        {isPasswordVisible ? <FaEyeSlash /> : <FaEye />}
+                                    </button>
+                                </div>
                                 {errors.password && <div className="text-red-500">{errors.password}</div>}
                             </div>
                             <div className="form-group w-[75%] m-auto mt-4">
                                 <label className="md:text-xl">Confirm Password</label>
-                                <input
-                                    type="password"
-                                    className={`w-full py-3 px-4 mt-2 bg-gray-200 ${errors.confirmPassword ? 'border-red-500' : ''}`}
-                                    value={confirmPassword}
-                                    onChange={(e) => setConfirmPassword(e.target.value)}
-                                />
+                                <div className="relative">
+                                    <input
+                                        type={isConfirmPasswordVisible ? 'text' : 'password'}
+                                        className="w-full py-3 px-4 mt-2 bg-gray-200 pr-10"
+                                        onChange={(e) => setConfirmPassword(e.target.value)}
+                                        value={confirmPassword}
+                                        required
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={toggleConfirmPasswordVisibility}
+                                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-700"
+                                    >
+                                        {isConfirmPasswordVisible ? <FaEyeSlash /> : <FaEye />}
+                                    </button>
+                                </div>
                                 {errors.confirmPassword && <div className="text-red-500">{errors.confirmPassword}</div>}
                                 <h1 className="mt-2">Have an account <Link className="text-blue-800" to={'/signin'}>Login</Link></h1>
                             </div>

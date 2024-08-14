@@ -6,7 +6,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const studentRoutes = require('./Routes/user');
 const adminRoutes = require('./Routes/admin');
-
+const cookieParser = require('cookie-parser');
 const app = express();
 const PORT = process.env.PORT ;
 
@@ -24,9 +24,11 @@ mongoose.connect('mongodb+srv://Abram:12345@cluster0.eyraldj.mongodb.net/?retryW
 // Middleware for JSON parsing
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-
-app.use(cors());
-
+app.use(cookieParser());
+app.use(cors({
+    origin: 'http://localhost:3000', // Replace with your frontend URL
+    credentials: true // Allow credentials (cookies) to be included
+}));
 // Routes
 app.use('/user', studentRoutes);
 app.use('/admin', adminRoutes);

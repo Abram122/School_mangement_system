@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs'); // For hashing passwords
+const bcrypt = require('bcryptjs'); 
+const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 
 const userSchema = new mongoose.Schema({
     name: {
@@ -21,7 +23,6 @@ const userSchema = new mongoose.Schema({
     birthDate: {
         type: Date,
         required: [true, 'Birth date is required.'],
-        // No match regex needed for Date type.
     },
     password: {
         type: String,
@@ -33,13 +34,23 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Profile image is required.']
     },
+    verified: {
+        default: Boolean
+    },
+    token: {
+        type: String,
+        default: null
+    },
+    refreshToken: {
+        type: String,
+        default: null
+    },
     createdAt: {
         type: Date,
         default: Date.now
     }
 });
 
-// Pre-save hook to hash the password before saving
 userSchema.pre('save', async function (next) {
     if (!this.isModified('password')) {
         return next();
@@ -49,11 +60,20 @@ userSchema.pre('save', async function (next) {
     next();
 });
 
-// Method to compare passwords
 userSchema.methods.comparePassword = async function (enteredPassword) {
     return await bcrypt.compare(enteredPassword, this.password);
 };
 
+
+userSchema.methods.generateAuthToken = function () {
+    const token = jwt.sign({ _id: this._id, name: this.name }, process.env.JWT_SECRET, { expiresIn: '15m' }); // Access token valid for 15 minutes
+    return token;
+};
+
+userSchema.methods.generateRefreshToken = function () {
+    const refreshToken = crypto.randomBytes(40).toString('hex'); // Generate a random refresh token
+    return refreshToken;
+};
 const User = mongoose.model('User', userSchema);
 
 module.exports = User;

@@ -1,7 +1,6 @@
 const User = require('../Models/User');
-const upload = require('../middleware/multerConfig'); // Assuming multerConfig.js is in a middleware folder
+const upload = require('../middleware/multerConfig'); 
 
-// Create a new user with file upload
 exports.createUser = (req, res) => {
     upload(req, res, async (err) => {
         if (err) {
@@ -12,16 +11,14 @@ exports.createUser = (req, res) => {
                 let profileImage = '';
 
                 if (req.file) {
-                    profileImage = req.file.path; // Save the file path
+                    profileImage = req.file.filename; 
                 }
 
-                // Check if user with the same email already exists
                 let user = await User.findOne({ email });
                 if (user) {
                     return res.status(400).json({ error: 'User with this email already exists.' });
                 }
 
-                // Create new user
                 user = new User({
                     name,
                     email,
@@ -30,13 +27,13 @@ exports.createUser = (req, res) => {
                     profileImage
                 });
 
-                // Save user to database
                 await user.save();
 
-                res.status(201).json({ message: 'User created successfully!', user });
+                const token = user.generateAuthToken();
+
+                res.status(201).json({ message: 'User created successfully!', user, token });
             } catch (error) {
                 console.error(error);
-                // Check if the error is a validation error
                 if (error.name === 'ValidationError') {
                     const errors = Object.values(error.errors).map(val => val.message);
                     res.status(400).json({ errors });
@@ -48,18 +45,109 @@ exports.createUser = (req, res) => {
     });
 };
 
-// Get all users
+exports.login = async (req, res) => {
+    console.log('in')
+    try {
+        const { email, password } = req.body;
+
+        // Find user by email
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(400).json({ error: 'Invalid email or password.' });
+        }
+
+        // Validate password
+        const isMatch = await user.comparePassword(password);
+        if (!isMatch) {
+            return res.status(400).json({ error: 'Invalid email or password.' });
+        }
+
+        // Generate tokens
+        const token = user.generateAuthToken();
+        const refreshToken = user.generateRefreshToken();
+
+        // Save tokens to the database
+        user.token = token;
+        user.refreshToken = refreshToken;
+        await user.save();
+
+        // Set the access token in an HTTP-only cookie
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: 15 * 60 * 1000 // 15 minutes
+        });
+
+        // Set the refresh token in an HTTP-only cookie
+        res.cookie('refreshToken', refreshToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+        });
+
+        res.status(200).json({ message: 'Login successful!', token, refreshToken });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Server error. Please try again later.' });
+    }
+};
+
+exports.refreshToken = async (req, res) => {
+    try {
+        const { refreshToken } = req.cookies;
+
+        if (!refreshToken) {
+            return res.status(401).json({ error: 'Refresh token not found, login again.' });
+        }
+
+        // Find the user with the matching refresh token
+        const user = await User.findOne({ refreshToken });
+        if (!user) {
+            return res.status(403).json({ error: 'Invalid refresh token.' });
+        }
+
+        // Generate a new access token
+        const newToken = user.generateAuthToken();
+
+        // Optionally: generate a new refresh token and update the user
+        const newRefreshToken = user.generateRefreshToken();
+        user.token = newToken;
+        user.refreshToken = newRefreshToken;
+        await user.save();
+
+        // Set the new tokens in cookies
+        res.cookie('token', newToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: 15 * 60 * 1000 // 15 minutes
+        });
+
+        res.cookie('refreshToken', newRefreshToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+        });
+
+        res.status(200).json({ message: 'Token refreshed successfully!', token: newToken });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Server error. Please try again later.' });
+    }
+};
+
+
 exports.getAllUsers = async (req, res) => {
     try {
-        // Fetch all users from the database
         const users = await User.find();
 
-        // If no users are found, return a 404 status
         if (!users.length) {
             return res.status(404).json({ error: 'No users found.' });
         }
 
-        // Return the list of users with a 200 status
         res.status(200).json(users);
     } catch (error) {
         console.error(error);
@@ -67,7 +155,6 @@ exports.getAllUsers = async (req, res) => {
     }
 };
 
-// Get a user by ID
 exports.getUserById = async (req, res) => {
     try {
         const user = await User.findById(req.params.id);
@@ -77,7 +164,6 @@ exports.getUserById = async (req, res) => {
         res.status(200).json(user);
     } catch (error) {
         console.error(error);
-        // Check if the error is related to invalid ObjectId
         if (error.kind === 'ObjectId') {
             res.status(400).json({ error: 'Invalid user ID format.' });
         } else {

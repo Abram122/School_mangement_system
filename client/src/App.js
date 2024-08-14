@@ -6,6 +6,8 @@ import VerificationEmail from "./pages/VerificationEmail";
 import Profile from "./pages/Profile";
 import Page404 from "./pages/Page404";
 import Contact from "./pages/Contact";
+import Classroom from "./pages/Classroom";
+import Room from "./pages/room";
 function App() {
   return (
     <div>
@@ -15,8 +17,10 @@ function App() {
           <Route path="signin" element={<Signin/>}/>
           <Route path="verification/:email" element={<VerificationEmail/>}/>
           <Route path="profile" element={<Profile/>}/>
-          <Route path="*" element={<Page404/>}/>
           <Route path="contact" element={<Contact/>}/>
+          <Route path="room" element={<Classroom/>}/>
+          <Route path="classroom" element={<Room/>}/>
+          <Route path="*" element={<Page404/>}/>
         </Routes>
     </div>
   );

@@ -1,0 +1,8 @@
+.about:hover{
+    color: white;
+    background-color: #84cc16;
+    transition: 0.3s;
+}
+.about:hover .about-heading{
+    color: white;
+}
