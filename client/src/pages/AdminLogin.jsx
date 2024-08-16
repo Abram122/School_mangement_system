@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Navbar from "../compoents/Navbar";
 import { FaEye, FaEyeSlash } from 'react-icons/fa'; // Make sure to install react-icons
-export default function Signin() {
+export default function AdminLogin() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
@@ -19,13 +19,12 @@ export default function Signin() {
         setError('');
 
         try {
-            console.log('sss',`${process.env.REACT_APP_HOST_SERVER}user/login`)
+            console.log('sss', `${process.env.REACT_APP_HOST_SERVER}user/login`)
             const response = await axios.post(`${process.env.REACT_APP_HOST_SERVER}user/login`, { email, password }, { withCredentials: true });
             sessionStorage.setItem('token', response.data.token);
-            navigate('/');
+            navigate('/dashboard');
         } catch (err) {
             setLoading(false);
-
             if (err.response) {
                 console.log(err)
                 if (err.response.status === 400) {
@@ -46,7 +45,7 @@ export default function Signin() {
             <Navbar />
             <div className="signup w-[90%] mt-20 m-auto shadow-lg min-h-[90vh]">
                 <div className="header bg-lime-500 text-white text-center py-4">
-                    <h1 className="mt-3 text-xl md:text-2xl">Welcome Back</h1>
+                    <h1 className="mt-3 text-xl md:text-2xl">Welcome Admin</h1>
                     <h1 className="mt-3 text-xl md:text-2xl">Login Now</h1>
                 </div>
                 <div className="body">
@@ -79,7 +78,6 @@ export default function Signin() {
                                     {isPasswordVisible ? <FaEyeSlash /> : <FaEye />}
                                 </button>
                             </div>
-                            <h1 className="mt-2">Do not have an account? <Link className="text-blue-800" to={'/signup'}>Sign Up</Link></h1>
                         </div>
                         {error && (
                             <div className="form-group w-[75%] m-auto mt-4">

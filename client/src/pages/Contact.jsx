@@ -65,7 +65,7 @@ const Contact = () => {
             <Navbar />
             {loading ? <Loader text="Sending..." /> :
                 <div className={`w-[90%] mt-20 m-auto shadow-lg ${loading ? 'opacity-50' : ''}`}>
-                    <div className="header bg-black text-white text-center py-4 w-full m-auto">
+                    <div className="header bg-lime-500 text-white text-center py-4 w-full m-auto">
                         <h1 className="text-2xl text-center">Contact Us</h1>
                     </div>
                     <div className="mt-3">
