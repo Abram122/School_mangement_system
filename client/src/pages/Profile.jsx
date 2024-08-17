@@ -5,8 +5,8 @@ import axios from "axios";
 import Loader from "../compoents/Loader";
 import Cookies from 'js-cookie';
 const Profile = () => {
-    const [data, setData] = useState('')
     const [loader, setLoader] = useState(false)
+    const [data, setData] = useState('')
     const getData = () => {
         setLoader(true)
         axios.get(`${process.env.REACT_APP_HOST_SERVER}user/get/students`).then((res) => {

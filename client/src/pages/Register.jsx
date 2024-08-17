@@ -1,11 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
-import upload from "../asset/images/upload.webp";
-import { Link } from "react-router-dom";
 import Navbar from "../compoents/Navbar";
 import Loader from "../compoents/Loader";
-import { FaEye, FaEyeSlash } from 'react-icons/fa'; // Make sure to install react-icons
-
 export default function Register() {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
@@ -49,21 +45,11 @@ export default function Register() {
             setLoading(false);
             return;
         }
-        const formData = new FormData();
-        formData.append('name', name);
-        formData.append('email', email);
-        formData.append('birthDate', birthDate);
-        formData.append('ID', ID);
-        formData.append('motherName', motherName);
-        
         try {
-            const response = await axios.post(`${process.env.REACT_APP_HOST_SERVER}user/students`, formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
+            const response = await axios.post(`${process.env.REACT_APP_HOST_SERVER}user/register`, {name,email,ID,motherName,birthDate}, {
             });
 
-            setSuccess('Signup successful!');
+            setSuccess('Sended successful!');
             setName('');
             setEmail('');
             setBirthDate('');
@@ -84,7 +70,7 @@ export default function Register() {
     return (
         <div className="py-3">
             <Navbar />
-            {loading ? <Loader text="Signing up..." /> :
+            {loading ? <Loader text="Sending Application..." /> :
                 <div className="signup w-[90%] mt-20 m-auto shadow-lg min-h-[90vh]">
                     <div className="header bg-lime-500 text-white text-center py-4">
                         <h1 className="mt-3 text-xl md:text-3xl">Register Page</h1>
