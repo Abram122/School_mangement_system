@@ -10,9 +10,10 @@ const RegisterSchema = new Schema({
         type: String,
         required :[true , "This Field Is Required"]
     },
-    ID: {
+    SID: {
         type: Number,
-        required :[true , "This Field Is Required"]
+        required: [true, "This Field Is Required"],
+        unique:true
     },
     motherName: {
         type: String,
@@ -25,6 +26,10 @@ const RegisterSchema = new Schema({
     status: {
         type: String,
         default: 'In Progress'
+    },
+    rejectedResoan: {
+        type: String,
+        default: ''
     },
 });
 

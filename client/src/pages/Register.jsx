@@ -46,7 +46,7 @@ export default function Register() {
             return;
         }
         try {
-            const response = await axios.post(`${process.env.REACT_APP_HOST_SERVER}user/register`, {name,email,ID,motherName,birthDate}, {
+            const response = await axios.post(`${process.env.REACT_APP_HOST_SERVER}user/register`, { name, email, SID: ID,motherName,birthDate}, {
             });
 
             setSuccess('Sended successful!');

@@ -59,6 +59,20 @@ exports.getRoomById = async (req, res) => {
 
 
 // Get Rooms by Teacher Name
+exports.getRoomsByCode = async (req, res) => {
+    const { roomCode } = req.body;
+    try {
+        const rooms = await Room.find({ roomCode });
+        if (!rooms) {
+            res.status(400).json({ error: 'Canot find a classroom with this code' })
+        }
+        res.status(200).json(rooms);
+    } catch (error) {
+        res.status(500).json({ error: 'Server error. Please try again later.' });
+    }
+};
+
+// Get Rooms by Teacher Name
 exports.getRoomsByTeacher = async (req, res) => {
     const { roomTeacher } = req.body;
     console.log('on')

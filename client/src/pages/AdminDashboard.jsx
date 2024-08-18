@@ -1,15 +1,18 @@
 import React, { useState } from 'react';
-import AddAdmin from './AddAdmin';
+import AddTeacher from './AddTeacher';
 import RegistrationQueue from './RegistrationQueue';
 import AddRoom from './AddRoom';
 import RoomDisplay from './RoomDisplay';
+import Teacher from './Teachers';
 const AdminDashboard = () => {
     const [selectedPage, setSelectedPage] = useState('AddAdmin');
 
     const renderContent = () => {
         switch (selectedPage) {
-            case 'AddAdmin':
-                return <AddAdmin />;
+            case 'AddTeacher':
+                return <AddTeacher />;
+            case 'Teacher':
+                return <Teacher />;
             case 'RegistrationQueue':
                 return <RegistrationQueue />;
             case 'AddRoom':
@@ -17,7 +20,7 @@ const AdminDashboard = () => {
             case 'RoomDisplay':
                 return <RoomDisplay />;
             default:
-                return <AddAdmin />;
+                return <AddTeacher />;
         }
     };
 
@@ -31,9 +34,14 @@ const AdminDashboard = () => {
                 <div className="flex-grow">
                     <nav className="space-y-2">
                         <button
-                            onClick={() => setSelectedPage('AddAdmin')}
-                            className={`block w-full text-left px-6 py-3 hover:bg-lime-600 focus:outline-none ${selectedPage === 'AddAdmin' ? 'bg-lime-600' : ''}`}>
-                            Add Admin
+                            onClick={() => setSelectedPage('AddTeacher')}
+                            className={`block w-full text-left px-6 py-3 hover:bg-lime-600 focus:outline-none ${selectedPage === 'AddTeacher' ? 'bg-lime-600' : ''}`}>
+                            Add Teacher 
+                        </button>
+                        <button
+                            onClick={() => setSelectedPage('Teacher')}
+                            className={`block w-full text-left px-6 py-3 hover:bg-lime-600 focus:outline-none ${selectedPage === 'Teacher' ? 'bg-lime-600' : ''}`}>
+                            Teachers
                         </button>
                         <button
                             onClick={() => setSelectedPage('RegistrationQueue')}
@@ -47,7 +55,7 @@ const AdminDashboard = () => {
                         </button>
                         <button
                             onClick={() => setSelectedPage('RoomDisplay')}
-                            className={`block w-full text-left px-6 py-3 hover:bg-lime-600 focus:outline-none ${selectedPage === 'AddRoom' ? 'bg-lime-600' : ''}`}>
+                            className={`block w-full text-left px-6 py-3 hover:bg-lime-600 focus:outline-none ${selectedPage === 'RoomDisplay' ? 'bg-lime-600' : ''}`}>
                             Room Display
                         </button>
                     </nav>

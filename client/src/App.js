@@ -11,6 +11,7 @@ import Room from "./pages/room";
 import AdminLogin from "./pages/AdminLogin";
 import Register from "./pages/Register";
 import AdminDashboard from "./pages/AdminDashboard";
+import RegistrationInfo from "./pages/RegistrationInfo";
 function App() {
   return (
     <div>
@@ -19,6 +20,7 @@ function App() {
           <Route path="signup" element={<Signup/>}/>
           <Route path="signin" element={<Signin/>}/>
           <Route path="register" element={<Register/>}/>
+          <Route path="register/info" element={<RegistrationInfo/>}/>
           <Route path="verification/:email" element={<VerificationEmail/>}/>
           <Route path="profile" element={<Profile/>}/>
           <Route path="contact" element={<Contact/>}/>

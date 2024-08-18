@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { FaHome, FaBook, FaBell, FaUserCircle, FaList ,FaUserPlus } from 'react-icons/fa';
+import { FaHome, FaBook, FaBell, FaUserCircle, FaList ,FaUserPlus, FaSchool } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import Modal from 'react-modal';
+import { FaCircleInfo } from 'react-icons/fa6';
 
 const Navbar = () => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -148,7 +149,19 @@ const Navbar = () => {
                         className="text-gray-700 hover:text-lime-500 transition-colors duration-300 flex items-center"
                     >
                         <FaUserPlus className="mr-2" /> Register
-                    </Link>
+                        </Link>
+                        <Link
+                            to={'/register/info'}
+                            className="text-gray-700 hover:text-lime-500 transition-colors duration-300 flex items-center"
+                        >
+                            <FaCircleInfo className="mr-2" /> Registration Info
+                        </Link>
+                        <Link
+                            to={'/room'}
+                            className="text-gray-700 hover:text-lime-500 transition-colors duration-300 flex items-center"
+                        >
+                            <FaSchool className="mr-2" /> Classrooms
+                        </Link>
                     </div>
                 </div>
             </div>
@@ -158,7 +171,7 @@ const Navbar = () => {
                 onRequestClose={closeModal}
                 contentLabel="Example Modal"
                 className="bg-white rounded-lg p-8 max-w-lg mx-auto my-20 relative"
-                overlayClassName="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"
+                overlayClassName="fixed inset-0 z-20 bg-black bg-opacity-50 backdrop-blur-sm"
             >
                 <div className="">
                     <div className='flex gap-6 justify-around'>
@@ -169,10 +182,16 @@ const Navbar = () => {
                             <FaUserPlus className="mr-2" /> Register
                         </Link>
                         <Link
-                            to={'/'}
+                            to={'/register/info'}
                             className="text-gray-700 hover:text-lime-500 transition-colors duration-300 flex items-center"
                         >
-                            <FaBell className="mr-2" /> Notifications
+                            <FaCircleInfo className="mr-2" /> Registration Info
+                        </Link>
+                        <Link
+                            to={'/room'}
+                            className="text-gray-700 hover:text-lime-500 transition-colors duration-300 flex items-center"
+                        >
+                            <FaSchool className="mr-2" /> Classrooms
                         </Link>
                     </div>
                     <div className='text-center mt-4'>  
