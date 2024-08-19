@@ -35,7 +35,8 @@ const userSchema = new mongoose.Schema({
         required: [true, 'Profile image is required.']
     },
     verified: {
-        default: Boolean
+        type: String,
+        default:''
     },
     token: {
         type: String,

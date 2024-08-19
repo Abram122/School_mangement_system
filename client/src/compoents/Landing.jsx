@@ -4,17 +4,54 @@ import img2 from '../asset/images/landing2.jpg';
 import img3 from '../asset/images/landing3.jpg';
 import img4 from '../asset/images/landing4.jpg';
 import { Link } from "react-router-dom";
+import axios from "axios";
 
 const AutoFadeCarousel = () => {
     const images = [img1, img2, img3, img4];
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isPaused, setIsPaused] = useState(false);
+    const [data, setData] = useState('');
+
+    const fetchStudentData = async () => {
+        try {
+            const refreshToken = sessionStorage.getItem('refreshToken');
+            if (!refreshToken) {
+                return;
+            }
+
+            const response = await axios.post(`${process.env.REACT_APP_HOST_SERVER}user/get/student`, { refreshToken });
+            if (response.data.message === "User found!") {
+                setData(response.data.user);
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
+    const handleLogout = async () => {
+        try {
+            const refreshToken = sessionStorage.getItem('refreshToken');
+            if (!refreshToken) {
+                return;
+            }
+
+            await axios.post(`${process.env.REACT_APP_HOST_SERVER}user/logout`, { refreshToken });
+            sessionStorage.removeItem('refreshToken');
+            setData('');
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
+    useEffect(() => {
+        fetchStudentData();
+    }, []);
 
     useEffect(() => {
         if (!isPaused) {
             const interval = setInterval(() => {
                 setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
-            }, 4000); 
+            }, 4000);
 
             return () => clearInterval(interval);
         }
@@ -38,9 +75,19 @@ const AutoFadeCarousel = () => {
                     <p className="text-lg mb-8">Empowering students to achieve their full potential</p>
                     <div className="flex flex-wrap justify-center gap-6">
                         <Link to="/signin">
-                            <button className="py-3 px-8 bg-lime-500 text-black font-semibold rounded-md hover:bg-lime-600 transition duration-300 shadow-md">
-                                Login
-                            </button>
+                            {
+                                data ?
+                                    <button
+                                        onClick={handleLogout}
+                                        className="py-3 px-8 bg-lime-500 text-black font-semibold rounded-md hover:bg-lime-600 transition duration-300 shadow-md"
+                                    >
+                                        Log out
+                                    </button>
+                                    :
+                                    <button className="py-3 px-8 bg-lime-500 text-black font-semibold rounded-md hover:bg-lime-600 transition duration-300 shadow-md">
+                                        Login
+                                    </button>
+                            }
                         </Link>
                         <a href="#about-us">
                             <button className="py-3 px-8 bg-white text-black font-semibold rounded-md hover:bg-gray-300 transition duration-300 shadow-md">

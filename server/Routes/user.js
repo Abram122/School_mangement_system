@@ -8,6 +8,8 @@ const roomController = require('../Controllers/roomController');
 router.post('/students', studentController.createUser);
 // get student 
 router.get('/get/students', studentController.getAllUsers);
+// get student with refreshToken
+router.post('/get/student', studentController.getStudentWithRefreshToken);
 // contanct 
 router.post('/contact', contactController.sendContact);
 // login
@@ -22,5 +24,11 @@ router.put('/update/registeration', registerController.updateRegistration);
 router.get('/get/register', registerController.getAllRegistrations);
 // get room with code 
 router.post('/get/room', roomController.getRoomsByCode);
+// send verification code  
+router.post('/verification', studentController.sendVerification);
+// check code  
+router.post('/check/code', studentController.checkVerificationCode);
+// logout  
+router.post('/logout', studentController.logout);
 
 module.exports = router;

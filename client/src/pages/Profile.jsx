@@ -1,25 +1,36 @@
 import { useEffect, useState } from "react";
-import Verification from "../asset/images/verify.png";
 import Navbar from "../compoents/Navbar";
 import axios from "axios";
 import Loader from "../compoents/Loader";
-import Cookies from 'js-cookie';
+import { useNavigate } from "react-router-dom";
 const Profile = () => {
     const [loader, setLoader] = useState(false)
     const [data, setData] = useState('')
-    const getData = () => {
-        setLoader(true)
-        axios.get(`${process.env.REACT_APP_HOST_SERVER}user/get/students`).then((res) => {
-            setLoader(false)
-            setData(res.data)
-        }).catch((err) => {
+    const navigate = useNavigate('')
+    const fetchStudentData = async () => {
+        try {
+            setLoader(true)
+            const refreshToken = sessionStorage.getItem('refreshToken');
+            if (!refreshToken) {
+                navigate('/signin')
+                return;
+            }
+
+            const response = await axios.post(`${process.env.REACT_APP_HOST_SERVER}user/get/student`, { refreshToken });
+            if (response.data.message === "User found!") {
+                setData(response.data.user);
+                setLoader(false)
+            } 
+        } catch (err) {
             setLoader(false)
             console.log(err)
-        })
-    }
+        }
+    };
+
     useEffect(() => {
-        getData()
-    }, [])
+        fetchStudentData();
+    }, []);
+
     return (
         <div className="py-3">
             <Navbar />
@@ -32,7 +43,7 @@ const Profile = () => {
                         </div>
                         <div className="md:flex flex-wrap gap-4 items-center py-3">
                             <div className="profile-img md:w-[33%] text-center">
-                                <img src={Verification} alt="" className="w-32 h-32 rounded-full m-auto border-yellow-600 p-1 border-2" />
+                                    <img src={`${process.env.REACT_APP_HOST_SERVER}images/${data.profileImage}`} alt="" className="w-32 h-32 rounded-full m-auto border-yellow-600 p-1 border-2" />
                             </div>
                             <div className="profile-info md:w-[60%]">
                                 <div className="inputs flex flex-wrap justify-center md:justify-start gap-4">
@@ -41,7 +52,7 @@ const Profile = () => {
                                         <input
                                             type="text"
                                             disabled
-                                            value={data[0].name}
+                                            value={data.name}
                                             className="w-[250px] md:w-[340px] py-3 px-4 mt-2 bg-gray-200"
                                         />
                                     </div>
@@ -50,7 +61,7 @@ const Profile = () => {
                                         <input
                                             type="text"
                                             disabled
-                                            value={data[0].email}
+                                            value={data.email}
                                             className="w-[250px] md:w-[340px] py-3 px-4 mt-2 bg-gray-200"
                                         />
                                     </div>
@@ -59,7 +70,7 @@ const Profile = () => {
                                         <input
                                             type="text"
                                             disabled
-                                            value={data[0].birthDate.slice(0,-14)}
+                                            value={data.birthDate.slice(0,-14)}
                                             className="w-[250px] md:w-[340px] py-3 px-4 mt-2 bg-gray-200"
                                         />
                                     </div>

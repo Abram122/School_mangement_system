@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Navbar from "../compoents/Navbar";
-import { FaEye, FaEyeSlash } from 'react-icons/fa'; // Make sure to install react-icons
+import { FaEye, FaEyeSlash } from 'react-icons/fa'; 
 export default function Signin() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -19,13 +19,11 @@ export default function Signin() {
         setError('');
 
         try {
-            console.log('sss',`${process.env.REACT_APP_HOST_SERVER}user/login`)
             const response = await axios.post(`${process.env.REACT_APP_HOST_SERVER}user/login`, { email, password }, { withCredentials: true });
-            sessionStorage.setItem('token', response.data.token);
+            sessionStorage.setItem('refreshToken', response.data.refreshToken);
             navigate('/');
         } catch (err) {
             setLoading(false);
-
             if (err.response) {
                 console.log(err)
                 if (err.response.status === 400) {

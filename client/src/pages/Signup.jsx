@@ -1,7 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import upload from "../asset/images/upload.webp";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../compoents/Navbar";
 import Loader from "../compoents/Loader";
 import { FaEye, FaEyeSlash } from 'react-icons/fa'; // Make sure to install react-icons
@@ -19,7 +19,7 @@ export default function Signup() {
     const [success, setSuccess] = useState('');
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
     const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false);
-
+    const navigate = useNavigate('')
     const togglePasswordVisibility = () => {
         setIsPasswordVisible((prevState) => !prevState);
     };
@@ -86,7 +86,7 @@ export default function Signup() {
                     'Content-Type': 'multipart/form-data'
                 }
             });
-
+            navigate(`/verification/${email}`)
             setSuccess('Signup successful!');
             setName('');
             setEmail('');

@@ -1,5 +1,7 @@
 const User = require('../Models/User');
-const upload = require('../middleware/multerConfig'); 
+const VerificationCode = require('../Models/VerificationCode ');
+const upload = require('../middleware/multerConfig');
+const { sendVerificationEmail, generateVerificationCode } = require('../Models/emailModel');
 
 exports.createUser = (req, res) => {
     upload(req, res, async (err) => {
@@ -11,7 +13,7 @@ exports.createUser = (req, res) => {
                 let profileImage = '';
 
                 if (req.file) {
-                    profileImage = req.file.filename; 
+                    profileImage = req.file.filename;
                 }
 
                 let user = await User.findOne({ email });
@@ -45,8 +47,69 @@ exports.createUser = (req, res) => {
     });
 };
 
-exports.login = async (req, res) => {
+exports.sendVerification = async (req, res) => {
     console.log('in')
+    const { email } = req.body;
+    if (!email) {
+        return res.status(400).json({ success: false, message: 'Email is required' });
+    }
+
+    try {
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        const verificationCode = generateVerificationCode();
+
+        const newVerificationCode = new VerificationCode({
+            userId: user._id,
+            code: verificationCode
+        });
+
+        await newVerificationCode.save();
+
+        const emailResponse = await sendVerificationEmail(email, verificationCode);
+
+        if (emailResponse.valid) {
+            return res.status(200).json({ success: true, message: 'Verification email sent successfully' });
+        } else {
+            return res.status(500).json({ success: false, message: 'Failed to send verification email', error: emailResponse.error });
+        }
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({ success: false, message: 'An error occurred', error: error.message });
+    }
+};
+
+exports.checkVerificationCode = async (req, res) => {
+    const { email, code } = req.body;
+
+    if (!email || !code) {
+        return res.status(400).json({ success: false, message: 'Email and code are required' });
+    }
+
+    try {
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        const storedCode = await VerificationCode.findOne({ userId: user._id, code });
+        if (!storedCode) {
+            return res.status(400).json({ success: false, message: 'Invalid or expired verification code' });
+        }
+        user.verified = 'verified'
+        await user.save()
+        return res.status(200).json({ success: true, message: 'Verification successful' });
+
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({ success: false, message: 'An error occurred', error: error.message });
+    }
+};
+
+exports.login = async (req, res) => {
     try {
         const { email, password } = req.body;
 
@@ -76,15 +139,14 @@ exports.login = async (req, res) => {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'strict',
-            maxAge: 15 * 60 * 1000 // 15 minutes
+            maxAge: 120 * 60 * 1000 
         });
 
-        // Set the refresh token in an HTTP-only cookie
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'strict',
-            maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+            maxAge: 7 * 24 * 60 * 60 * 1000 
         });
 
         res.status(200).json({ message: 'Login successful!', token, refreshToken });
@@ -169,5 +231,50 @@ exports.getUserById = async (req, res) => {
         } else {
             res.status(500).json({ error: 'Server error. Please try again later.' });
         }
+    }
+};
+
+
+exports.logout = async (req, res) => {
+    try {
+        res.cookie('token', '', {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: 0
+        });
+
+        res.cookie('refreshToken', '', {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: 0
+        });
+
+        res.status(200).json({ message: 'Logout successful!' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Server error. Please try again later.' });
+    }
+};
+
+
+exports.getStudentWithRefreshToken = async (req, res) => {
+    try {
+        const { refreshToken } = req.body;
+
+        if (!refreshToken) {
+            return res.status(400).json({ error: 'Refresh token is required.' });
+        }
+
+        const user = await User.findOne({ refreshToken });
+        if (!user) {
+            return res.status(404).json({ error: 'User not found or refresh token is invalid.' });
+        }
+
+        res.status(200).json({ message: 'User found!', user });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Server error. Please try again later.' });
     }
 };
