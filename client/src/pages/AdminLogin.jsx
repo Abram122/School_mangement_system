@@ -1,61 +1,110 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Navbar from "../compoents/Navbar";
-import { FaEye, FaEyeSlash } from 'react-icons/fa'; // Make sure to install react-icons
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
+
 export default function AdminLogin() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [role, setRole] = useState('admin'); 
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+
     const togglePasswordVisibility = () => {
         setIsPasswordVisible((prevState) => !prevState);
     };
+
     const handleLogin = async (e) => {
         e.preventDefault();
         setLoading(true);
         setError('');
-
-        try {
-            console.log('sss', `${process.env.REACT_APP_HOST_SERVER}user/login`)
-            const response = await axios.post(`${process.env.REACT_APP_HOST_SERVER}user/login`, { email, password }, { withCredentials: true });
-            sessionStorage.setItem('token', response.data.token);
-            navigate('/dashboard');
-        } catch (err) {
-            setLoading(false);
-            if (err.response) {
+        if (role === 'admin') {
+            try {
+                const response = await axios.post(
+                    `${process.env.REACT_APP_HOST_SERVER}admin/admin/login`,
+                    { admin_name: email, admin_password:password },
+                    { withCredentials: true }
+                );
+                sessionStorage.setItem('token', response.data.refreshToken);
+                navigate('/admin/dashboard');
+            } catch (err) {
                 console.log(err)
-                if (err.response.status === 400) {
-                    setError('Invalid email or password.');
-                } else if (err.response.status === 404) {
-                    setError('Email not found.');
+                setLoading(false);
+                if (err.response) {
+                    if (err.response.status === 400) {
+                        setError('Invalid email or password.');
+                    } else if (err.response.status === 404) {
+                        setError('Email not found.');
+                    } else {
+                        setError('An error occurred. Please try again later.');
+                    }
                 } else {
-                    setError('An error occurred. Please try again later.');
+                    setError('Network error. Please check your connection.');
                 }
-            } else {
-                setError('Network error. Please check your connection.');
+            }
+        } else {
+            try {
+                const response = await axios.post(
+                    `${process.env.REACT_APP_HOST_SERVER}admin/teacher/login`,
+                    { teacherEmail: email, teacherPassword:password },
+                    { withCredentials: true }
+                );
+                sessionStorage.setItem('token', response.data.refreshToken);
+                navigate('/admin/dashboard');
+            } catch (err) {
+                console.log(err)
+                setLoading(false);
+                if (err.response) {
+                    if (err.response.status === 400) {
+                        setError('Invalid email or password.');
+                    } else if (err.response.status === 404) {
+                        setError('Email not found.');
+                    } else {
+                        setError('An error occurred. Please try again later.');
+                    }
+                } else {
+                    setError('Network error. Please check your connection.');
+                }
             }
         }
     };
+
+    useEffect(() => {
+        if (sessionStorage.getItem('token')) {
+            navigate('/admin/dashboard')
+        }
+    },[])
 
     return (
         <div className="py-3">
             <Navbar />
             <div className="signup w-[90%] mt-20 m-auto shadow-lg min-h-[90vh]">
                 <div className="header bg-lime-500 text-white text-center py-4">
-                    <h1 className="mt-3 text-xl md:text-2xl">Welcome Admin</h1>
+                    <h1 className="mt-3 text-xl md:text-2xl">Welcome</h1>
                     <h1 className="mt-3 text-xl md:text-2xl">Login Now</h1>
                 </div>
                 <div className="body">
                     <form className="form py-3" onSubmit={handleLogin}>
                         <div className="form-group w-[75%] m-auto mt-4">
+                            <label className="md:text-xl">Role</label>
+                            <select
+                                className="w-full py-3 px-4 mt-2 bg-gray-200"
+                                value={role}
+                                onChange={(e) => setRole(e.target.value)}
+                            >
+                                <option value="admin">Admin</option>
+                                <option value="teacher">Teacher</option>
+                            </select>
+                        </div>
+                        <div className="form-group w-[75%] m-auto mt-4">
                             <label className="md:text-xl">Email</label>
                             <input
                                 type="email"
                                 className="w-full py-3 px-4 mt-2 bg-gray-200"
-                                onChange={(e) => { setEmail(e.target.value) }}
+                                onChange={(e) => setEmail(e.target.value)}
                                 value={email}
                                 required
                             />

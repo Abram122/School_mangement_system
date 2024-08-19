@@ -125,16 +125,13 @@ exports.login = async (req, res) => {
             return res.status(400).json({ error: 'Invalid email or password.' });
         }
 
-        // Generate tokens
         const token = user.generateAuthToken();
         const refreshToken = user.generateRefreshToken();
 
-        // Save tokens to the database
         user.token = token;
         user.refreshToken = refreshToken;
         await user.save();
 
-        // Set the access token in an HTTP-only cookie
         res.cookie('token', token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
@@ -164,22 +161,18 @@ exports.refreshToken = async (req, res) => {
             return res.status(401).json({ error: 'Refresh token not found, login again.' });
         }
 
-        // Find the user with the matching refresh token
         const user = await User.findOne({ refreshToken });
         if (!user) {
             return res.status(403).json({ error: 'Invalid refresh token.' });
         }
 
-        // Generate a new access token
         const newToken = user.generateAuthToken();
 
-        // Optionally: generate a new refresh token and update the user
         const newRefreshToken = user.generateRefreshToken();
         user.token = newToken;
         user.refreshToken = newRefreshToken;
         await user.save();
 
-        // Set the new tokens in cookies
         res.cookie('token', newToken, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',

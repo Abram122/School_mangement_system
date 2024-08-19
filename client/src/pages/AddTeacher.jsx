@@ -9,6 +9,7 @@ const AddTeacher = () => {
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState('');
 
+    
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
