@@ -12,6 +12,7 @@ import AdminLogin from "./pages/AdminLogin";
 import Register from "./pages/Register";
 import AdminDashboard from "./pages/AdminDashboard";
 import RegistrationInfo from "./pages/RegistrationInfo";
+import SoonPage from "./pages/SoonPage";
 function App() {
   return (
     <div>
@@ -25,12 +26,13 @@ function App() {
           <Route path="profile" element={<Profile/>}/>
           <Route path="contact" element={<Contact/>}/>
           <Route path="room" element={<Classroom/>}/>
-          <Route path="classroom" element={<Room/>}/>
-          <Route path="*" element={<Page404 />} />
+          <Route path="classroom/:code" element={<Room/>}/>
           <Route path="admin">
           <Route path="login" element={ <AdminLogin/>} />
           <Route path="dashboard" element={ <AdminDashboard/>} />
           </Route>
+          <Route path="soon" element={ <SoonPage/>} />
+          <Route path="*" element={<Page404 />} />
         </Routes>
     </div>
   );

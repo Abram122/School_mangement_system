@@ -88,7 +88,7 @@ const Navbar = () => {
                         <FaBook className="mr-2" /> Contact Us
                     </Link>
                     <Link
-                        to={'/'}
+                        to={'/soon'}
                         className="text-gray-700 hover:text-lime-500 transition-colors duration-300 flex items-center"
                     >
                         <FaBell className="mr-2" /> Notifications
@@ -162,7 +162,7 @@ const Navbar = () => {
                             <FaBook className="mr-2" /> Contact Us
                         </Link>
                         <Link
-                            to={'/'}
+                            to={'/soon'}
                             className="text-gray-700 hover:text-lime-500 transition-colors duration-300 flex items-center"
                         >
                             <FaBell className="mr-2" /> Notifications

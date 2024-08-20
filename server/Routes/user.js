@@ -28,6 +28,12 @@ router.post('/get/room', roomController.getRoomsByCode);
 router.post('/verification', studentController.sendVerification);
 // check code  
 router.post('/check/code', studentController.checkVerificationCode);
+// add to student classroom  
+router.post('/room/student', roomController.addStudentToRoom);
+// add to material classroom  
+router.post('/room/material', roomController.addMaterialToRoom);
+// add to assignment classroom  
+router.post('/room/assignment', roomController.addAssignmentToRoom);
 // logout  
 router.post('/logout', studentController.logout);
 

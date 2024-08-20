@@ -15,7 +15,6 @@ const Profile = () => {
                 navigate('/signin')
                 return;
             }
-
             const response = await axios.post(`${process.env.REACT_APP_HOST_SERVER}user/get/student`, { refreshToken });
             if (response.data.message === "User found!") {
                 setData(response.data.user);
@@ -23,7 +22,8 @@ const Profile = () => {
             } 
         } catch (err) {
             setLoader(false)
-            console.log(err)
+            sessionStorage.removeItem('refreshToken')
+            navigate('/signin')
         }
     };
 

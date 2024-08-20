@@ -1,15 +1,39 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from 'axios';
 import Navbar from "../compoents/Navbar";
 import img from '../asset/images/contact.png';
+import { useNavigate } from "react-router-dom";
 
 const Classroom = () => {
     const [code, setCode] = useState('');
     const [room, setRoom] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [loader, setLoader] = useState(false)
+    const [data, setData] = useState('')
+    const navigate = useNavigate('')
+    const refreshToken = sessionStorage.getItem('refreshToken');
+    const fetchStudentData = async () => {
+        try {
+            setLoader(true)
+            if (!refreshToken) {
+                navigate('/signin')
+                return;
+            }
+            const response = await axios.post(`${process.env.REACT_APP_HOST_SERVER}user/get/student`, { refreshToken });
+            if (response.data.message === "User found!") {
+                setData(response.data.user);
+                setLoader(false)
+            }
+        } catch (err) {
+            setLoader(false)
+            sessionStorage.removeItem('refreshToken')
+            navigate('/signin')
+        }
+    };
 
-    const handleJoinClassroom = async () => {
+    
+    const handleGetClassroom = async () => {
         setLoading(true);
         setError(null);
         try {
@@ -24,7 +48,30 @@ const Classroom = () => {
             setLoading(false);
         }
     };
-
+    
+    const handleJoinClassroom = async (id) => {
+        setLoading(true);
+        setError(null);
+        try {
+            const response = await axios.post(`${process.env.REACT_APP_HOST_SERVER}user/room/student`, { roomId: id, refreshToken });
+            
+            if (response.data) {
+                navigate('/classroom/'+code)
+            }
+            if (response.data.length === 0) {
+                setError('Failed to join classroom. Please check the code and try again.');
+            }
+        } catch (error) {
+            console.log(error)
+            setError('Failed to join classroom. Please check the code and try again.');
+        } finally {
+            setLoading(false);
+        }
+    };
+    
+    useEffect(() => {
+        fetchStudentData();
+    }, []);
     return (
         <div className="min-h-screen bg-gray-100 text-gray-900">
             <Navbar />
@@ -51,11 +98,11 @@ const Classroom = () => {
                         required
                     />
                     <button
-                        onClick={handleJoinClassroom}
+                        onClick={handleGetClassroom}
                         className="mt-4 w-full bg-lime-500 text-white py-2 px-4 rounded-lg hover:bg-lime-600 transition-colors duration-300"
                         disabled={loading}
                     >
-                        {loading ? 'Joining...' : 'Join Classroom'}
+                        {loading ? 'Joining...' : 'Get Classroom'}
                     </button>
                     {error && <p className="text-red-500 mt-4">{error}</p>}
                 </div>
@@ -68,7 +115,7 @@ const Classroom = () => {
                             <div className="p-6">
                                 <h2 className="text-2xl font-bold mb-2">{room.roomName}</h2>
                                 <p className="text-gray-700 mb-4">Teacher: {room.roomTeacher}</p>
-                                <button className="w-full bg-lime-500 text-white py-2 px-4 rounded-lg hover:bg-lime-600 transition-colors duration-300">
+                                <button className="w-full bg-lime-500 text-white py-2 px-4 rounded-lg hover:bg-lime-600 transition-colors duration-300" onClick={() => handleJoinClassroom(room._id)}>
                                     Join Classroom Now !
                                 </button>
                             </div>

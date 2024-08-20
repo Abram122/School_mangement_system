@@ -15,7 +15,9 @@ exports.createUser = (req, res) => {
                 if (req.file) {
                     profileImage = req.file.filename;
                 }
-
+                if (!name || !email || !birthDate || !password || !profileImage){ 
+                    return res.status(400).json({ error: 'All fiend are required' });
+                }
                 let user = await User.findOne({ email });
                 if (user) {
                     return res.status(400).json({ error: 'User with this email already exists.' });
@@ -118,7 +120,9 @@ exports.login = async (req, res) => {
         if (!user) {
             return res.status(400).json({ error: 'Invalid email or password.' });
         }
-
+        if (user.verified !== "verified") {
+            return res.status(405).json({ error: 'unverified' });
+        }
         // Validate password
         const isMatch = await user.comparePassword(password);
         if (!isMatch) {

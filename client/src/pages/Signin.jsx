@@ -25,12 +25,15 @@ export default function Signin() {
         } catch (err) {
             setLoading(false);
             if (err.response) {
-                console.log(err)
                 if (err.response.status === 400) {
                     setError('Invalid email or password.');
                 } else if (err.response.status === 404) {
                     setError('Email not found.');
-                } else {
+                }
+                else if (err.response.status === 405) {
+                    navigate('/verification/' + email)
+                }
+                else {
                     setError('An error occurred. Please try again later.');
                 }
             } else {

@@ -63,6 +63,9 @@ export default function Signup() {
         if (!birthDate) {
             newErrors.birthDate = 'please enter a birth Date.';
         }
+        if (!fileimg) {
+            newErrors.img = 'please Upload a profile img.';
+        }
 
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
@@ -122,6 +125,7 @@ export default function Signup() {
                                         <img src={upload} className="w-24 h-24 rounded-full m-auto hover:cursor-pointer" />
                                 }
                             </label>
+                            {errors.img && <div className="text-red-500">{errors.img}</div>}
                             <input id="file-input" type="file" className="hidden" onChange={handleImageChange} />
                         </div>
                         <h1 className="mt-3 text-xl md:text-2xl">Signup Now</h1>

@@ -9,9 +9,8 @@ import axios from 'axios';
 
 const AdminDashboard = () => {
     const [selectedPage, setSelectedPage] = useState('Welcome');
+    const navigate = useNavigate();    
     const [role, setRole] = useState('');
-    const navigate = useNavigate();
-
     const fetchTeacherData = async () => {
         try {
             const refreshToken = sessionStorage.getItem('token');
