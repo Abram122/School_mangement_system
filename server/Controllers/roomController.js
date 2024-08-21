@@ -2,6 +2,7 @@ const Room = require('../Models/Room');
 const User = require('../Models/User'); 
 const Teacher = require('../Models/Teacher'); 
 const crypto = require('crypto'); 
+const path = require('path');
 const jwt = require('jsonwebtoken');
 
 const generateUniqueRoomCode = async () => {
@@ -180,22 +181,26 @@ exports.addStudentToRoom = async (req, res) => {
         res.status(500).json({ message: 'Error adding student', error: error.message });
     }
 };
+
 exports.addMaterialToRoom = async (req, res) => {
     try {
         const { roomId } = req.params;
-        const { name, type, url } = req.body;
+        const { name } = req.body;
+        console.log(req.body)
+        const material = req.file ? req.file.filename : null; 
 
         const room = await Room.findById(roomId);
         if (!room) {
             return res.status(404).json({ message: 'Room not found' });
         }
 
-        room.materials.push({ name, type, url });
+        room.materials.push({ name, material });
 
         await room.save();
 
         res.status(200).json({ message: 'Material added successfully', room });
     } catch (error) {
+        // console.log(error);
         res.status(500).json({ message: 'Error adding material', error: error.message });
     }
 };
@@ -220,3 +225,51 @@ exports.addAssignmentToRoom = async (req, res) => {
     }
 };
 
+exports.addCommentToRoom = async (req, res) => {
+    try {
+        const { roomId } = req.params;
+        const { text, author } = req.body;
+
+        const room = await Room.findById(roomId);
+        if (!room) {
+            return res.status(404).json({ message: 'Room not found' });
+        }
+
+        const newComment = { text, author };
+        room.comments.push(newComment);
+
+        await room.save();
+
+        res.status(200).json({ message: 'Comment added successfully', room });
+    } catch (error) {
+        res.status(500).json({ message: 'Error adding comment', error: error.message });
+    }
+};
+
+
+
+exports.addResponseToComment = async (req, res) => {
+    try {
+        const { roomId } = req.params;
+        const { text, author, commentId } = req.body;
+        const room = await Room.findById(roomId);
+        if (!room) {
+            return res.status(404).json({ message: 'Room not found' });
+        }
+
+        const comment = room.comments.id(commentId);
+        if (!comment) {
+            return res.status(404).json({ message: 'Comment not found' });
+        }
+
+        const newResponse = { text, author };
+        comment.responses.push(newResponse);
+
+        await room.save();
+
+        res.status(200).json({ message: 'Response added successfully', room });
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ message: 'Error adding response', error: error.message });
+    }
+};

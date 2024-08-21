@@ -4,8 +4,10 @@ import AddTeacher from './AddTeacher';
 import RegistrationQueue from './RegistrationQueue';
 import AddRoom from './AddRoom';
 import RoomDisplay from './RoomDisplay';
+import MyRooms from './MyRooms';
 import Teacher from './Teachers';
 import axios from 'axios';
+import Swal from 'sweetalert2';
 
 const AdminDashboard = () => {
     const [selectedPage, setSelectedPage] = useState('Welcome');
@@ -15,8 +17,14 @@ const AdminDashboard = () => {
         try {
             const refreshToken = sessionStorage.getItem('token');
             if (!refreshToken) {
-                navigate('/admin/login');
-                return false;
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Failed to verify teacher or Admin. Please log in again.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                }).then(() => {
+                    navigate('/admin/login');
+                }); return false;
             }
 
             const response = await axios.post(`${process.env.REACT_APP_HOST_SERVER}admin/teacher/verify`, { refreshToken });
@@ -35,20 +43,39 @@ const AdminDashboard = () => {
         try {
             const refreshToken = sessionStorage.getItem('token');
             if (!refreshToken) {
-                navigate('/admin/login');
-                return;
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Failed to verify teacher or Admin. Please log in again.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                }).then(() => {
+                    navigate('/admin/login');
+                }); return;
             }
 
             const response = await axios.post(`${process.env.REACT_APP_HOST_SERVER}admin/admin/verify`, { refreshToken });
             if (response.data.message === "Admin found!") {
                 setRole('admin');
             } else {
-                navigate('/admin/login');
-                sessionStorage.removeItem('token');
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Failed to verify teacher or Admin. Please log in again.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                }).then(() => {
+                    navigate('/admin/login');
+                }); sessionStorage.removeItem('token');
             }
         } catch (err) {
             console.error(err);
-            navigate('/admin/login');
+            Swal.fire({
+                title: 'Error!',
+                text: 'Failed to verify teacher or Admin. Please log in again.',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            }).then(() => {
+                navigate('/admin/login');
+            });
             sessionStorage.removeItem('token');
         }
     };
@@ -85,8 +112,10 @@ const AdminDashboard = () => {
                 return <AddRoom />;
             case 'RoomDisplay':
                 return <RoomDisplay />;
+            case 'MyRooms':
+                return <MyRooms />;
             default:
-                return <AddTeacher />;
+                return '';
         }
     };
 
@@ -111,13 +140,18 @@ const AdminDashboard = () => {
                                     Teachers
                                 </button>
                                 <button
+                                    onClick={() => setSelectedPage('RoomDisplay')}
+                                    className={`block w-full text-left px-6 py-3 hover:bg-lime-600 focus:outline-none ${selectedPage === 'RoomDisplay' ? 'bg-lime-600' : ''}`}>
+                                    Room Display
+                                </button>
+                                <button
                                     onClick={() => setSelectedPage('RegistrationQueue')}
                                     className={`block w-full text-left px-6 py-3 hover:bg-lime-600 focus:outline-none ${selectedPage === 'RegistrationQueue' ? 'bg-lime-600' : ''}`}>
                                     Registration Queue
                                 </button>
                             </>
                         )}
-                        {(role === 'admin' || role === 'teacher') && (
+                        {(role === 'teacher') && (
                             <>
                                 <button
                                     onClick={() => setSelectedPage('AddRoom')}
@@ -125,9 +159,9 @@ const AdminDashboard = () => {
                                     Add Room
                                 </button>
                                 <button
-                                    onClick={() => setSelectedPage('RoomDisplay')}
-                                    className={`block w-full text-left px-6 py-3 hover:bg-lime-600 focus:outline-none ${selectedPage === 'RoomDisplay' ? 'bg-lime-600' : ''}`}>
-                                    Room Display
+                                    onClick={() => setSelectedPage('MyRooms')}
+                                    className={`block w-full text-left px-6 py-3 hover:bg-lime-600 focus:outline-none ${selectedPage === 'MyRooms' ? 'bg-lime-600' : ''}`}>
+                                    My Rooms
                                 </button>
                             </>
                         )}

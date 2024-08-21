@@ -1,10 +1,41 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
+const responseSchema = new mongoose.Schema({
+    text: {
+        type: String,
+        required: true,
+    },
+    author: {
+        type: String,
+        required: true,
+    },
+    date: {
+        type: Date,
+        default: Date.now,
+    },
+});
+
+
+const commentSchema = new mongoose.Schema({
+    text: {
+        type: String,
+        required: true,
+    },
+    author: {
+        type: String,
+        required: true,
+    },
+    date: {
+        type: Date,
+        default: Date.now,
+    },
+    responses: { type: [responseSchema], required: true } 
+});
+
 const materialSchema = new Schema({
     name: { type: String, required: true },
-    type: { type: String, required: true },  
-    url: { type: String, required: true }
+    material: { type: String}
 });
 
 
@@ -21,7 +52,8 @@ const roomSchema = new Schema({
     roomCode: { type: String, required: true, unique: true },
     students: [{ type: String, ref: 'User', required: true }], 
     materials: { type: [materialSchema], required: true }, 
-    assignments: { type: [assignmentSchema], required: true } 
+    assignments: { type: [assignmentSchema], required: true } ,
+    comments: { type: [commentSchema], required: true } 
 });
 
 const Room = mongoose.model('Room', roomSchema);

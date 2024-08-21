@@ -2,7 +2,7 @@ const multer = require('multer');
 const path = require('path');
 
 const storage = multer.diskStorage({
-    destination: path.join(__dirname, '../public/images'), 
+    destination: path.join(__dirname, '../public/uploads'), 
     filename: (req, file, cb) => {
         const ext = path.extname(file.originalname).toLowerCase();
         const filename = Date.now() + ext;
@@ -12,22 +12,21 @@ const storage = multer.diskStorage({
 
 const upload = multer({
     storage: storage,
-    limits: { fileSize: 1024 * 1024 * 5 }, 
+    limits: { fileSize: 1024 * 1024 * 50 }, 
     fileFilter: (req, file, cb) => {
         checkFileType(file, cb);
     }
-}).single('profileImage'); 
-
+}).single('material'); 
 
 function checkFileType(file, cb) {
-    const filetypes = /jpeg|jpg|png|gif/;
+    const filetypes = /pdf|doc|docx|ppt|pptx|xls|xlsx/; 
     const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
     const mimetype = filetypes.test(file.mimetype);
 
     if (mimetype && extname) {
         return cb(null, true);
     } else {
-        cb('Error: Images Only!');
+        cb('Error: Invalid File Type!');
     }
 }
 

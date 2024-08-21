@@ -160,7 +160,7 @@ const Classroom = () => {
                                         <p className="text-gray-700 mb-4">Teacher: {room[0].roomTeacher}</p>
                                         <p className="text-gray-700 mb-4">Room Code: {room[0].roomCode}</p>
                                         <button
-                                            onClick={() => handleJoinClassroom(room._id, room.roomCode)}
+                                            onClick={() => navigate('/classroom/' + room[0].roomCode)}
                                             className="w-full bg-lime-500 text-white py-2 px-4 rounded-lg hover:bg-lime-600 transition-colors duration-300"
                                         >
                                             Go to Classroom Now!
