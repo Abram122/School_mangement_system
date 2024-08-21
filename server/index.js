@@ -21,7 +21,6 @@ mongoose.connect('mongodb+srv://Abram:12345@cluster0.eyraldj.mongodb.net/?retryW
     process.exit(-1);
 });
 
-// Middleware for JSON parsing
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
@@ -29,20 +28,17 @@ app.use(cors({
     origin: 'http://localhost:3000', 
     credentials: true 
 }));
-// Routes
+
 app.use('/user', studentRoutes);
 app.use('/admin', adminRoutes);
 
-// Serve uploaded images statically
 app.use(express.static('public'))
 
-// Error handling middleware
 app.use((err, req, res, next) => {
     console.error(err.stack);
-    res.status(500).json({ message: 'خطأ في الخادم الداخلي', error: err.message });
+    res.status(500).json({ message: 'error', error: err.message });
 });
 
-// Start the server
-app.listen(PORT, () => {
+app.listen(PORT || 5000, () => {
     console.log(`Server is running on ${PORT}`);
 });
