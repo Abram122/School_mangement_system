@@ -92,7 +92,7 @@ const sendRegistrationEmail = async (student_name, student_ID) => {
 const sendContactEmail = async (contact_name, contact_phone, message) => {
     const mailOptions = {
         from: process.env.EMAIL,
-        to: "kingber2017@gmail.com",
+        to: "kingbero2017@gmail.com",
         subject: 'New Contact',
         html: `
             <div style="font-family: Arial, sans-serif; color: #333;">

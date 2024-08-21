@@ -4,7 +4,7 @@ import upload from "../asset/images/upload.webp";
 import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../compoents/Navbar";
 import Loader from "../compoents/Loader";
-import { FaEye, FaEyeSlash } from 'react-icons/fa'; // Make sure to install react-icons
+import { FaEye, FaEyeSlash } from 'react-icons/fa'; 
 
 export default function Signup() {
     const [name, setName] = useState('');

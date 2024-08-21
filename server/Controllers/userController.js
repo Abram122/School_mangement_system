@@ -88,26 +88,29 @@ exports.checkVerificationCode = async (req, res) => {
     const { email, code } = req.body;
 
     if (!email || !code) {
-        return res.status(400).json({ success: false, message: 'Email and code are required' });
+        return res.status(400).json({ success: false, message: 'Email and code are required.' });
     }
 
     try {
         const user = await User.findOne({ email });
         if (!user) {
-            return res.status(404).json({ success: false, message: 'User not found' });
+            return res.status(400).json({ success: false, message: 'Invalid email or code.' });
         }
 
         const storedCode = await VerificationCode.findOne({ userId: user._id, code });
         if (!storedCode) {
-            return res.status(400).json({ success: false, message: 'Invalid or expired verification code' });
+            return res.status(400).json({ success: false, message: 'Invalid or expired verification code.' });
         }
-        user.verified = 'verified'
-        await user.save()
-        return res.status(200).json({ success: true, message: 'Verification successful' });
+
+        // Update user's verification status
+        user.verified = 'verified';
+        await user.save();
+
+        return res.status(200).json({ success: true, message: 'Verification successful.' });
 
     } catch (error) {
-        console.log(error)
-        return res.status(500).json({ success: false, message: 'An error occurred', error: error.message });
+        console.error('Verification error:', error);
+        return res.status(500).json({ success: false, message: 'An error occurred during verification.', error: error.message });
     }
 };
 
