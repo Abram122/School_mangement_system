@@ -8,6 +8,7 @@ const Room = () => {
     const [loader, setLoader] = useState(false);
     const [data, setData] = useState('');
     const [room, setRoom] = useState(null);
+    const [student, setStudent] = useState(null);
     const { code } = useParams()
     const navigate = useNavigate('');
     const [role, setRole] = useState('');
@@ -50,7 +51,8 @@ const Room = () => {
         try {
             const response = await axios.post(`${process.env.REACT_APP_HOST_SERVER}user/get/room`, { roomCode: code });
             setRoom(response.data);
-            console.log(response.data)
+            setStudent(response.data[0].students);
+            console.log(response.data[0].students)
         } catch (error) {
             console.log(error)
         }
@@ -227,10 +229,9 @@ const Room = () => {
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         {
-                            room && room.students && room.students.map((student,index) => (
+                            student && student.map((student,index) => (
                                 <div key={index} className="bg-gray-50 p-4 rounded-lg shadow-md">
                                     <p className="text-lg font-bold text-gray-900">{student}</p>
-                                    <p className="text-lg font-bold text-gray-900">sss</p>
                                 </div>
                             ))
                         }

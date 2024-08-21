@@ -6,6 +6,7 @@ const AddRoom = () => {
     const [teacherName, setTeacherName] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const refreshToken = sessionStorage.getItem('token');
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -26,7 +27,7 @@ const AddRoom = () => {
         }
 
         try {
-            const response = await axios.post(`${process.env.REACT_APP_HOST_SERVER}admin/room`, { roomName, roomTeacher: teacherName });
+            const response = await axios.post(`${process.env.REACT_APP_HOST_SERVER}admin/room`, { roomName, roomTeacher: teacherName ,refreshToken});
             alert('Room added successfully!');
             setRoomName('');
             setTeacherName('');

@@ -1,5 +1,6 @@
 const Room = require('../Models/Room'); 
 const User = require('../Models/User'); 
+const Teacher = require('../Models/Teacher'); 
 const crypto = require('crypto'); 
 const jwt = require('jsonwebtoken');
 
@@ -16,26 +17,36 @@ const generateUniqueRoomCode = async () => {
 // Create a new Room
 exports.createRoom = async (req, res) => {
     try {
-        const { roomName, roomTeacher } = req.body;
+        const { roomName, roomTeacher ,refreshToken} = req.body;
 
-        if (!roomName || roomName.length < 3 || roomName.length > 50) {
-            return res.status(400).json({ message: "Room name must be between 3 and 50 characters" });
-        }
-
-        if (!roomTeacher || roomTeacher.length < 3 || roomTeacher.length > 50) {
-            return res.status(400).json({ message: "Teacher name must be between 3 and 50 characters" });
+        // Validate inputs
+        if (!roomName || !roomTeacher) {
+            return res.status(400).json({ message: 'Room name and teacher are required' });
         }
 
         const roomCode = await generateUniqueRoomCode();
 
-        const newRoom = new Room({ roomName, roomTeacher, roomCode });
+        const newRoom = new Room({
+            roomName,
+            roomTeacher,
+            roomCode
+        });
+
         await newRoom.save();
+
+        const teacher = await Teacher.findOne({ refreshToken });
+        console.log(teacher)
+        
+        if (!teacher.rooms.includes(roomCode)) {
+            teacher.rooms.push(roomCode);
+            await teacher.save();
+        }
+
         res.status(201).json({ message: "Room created successfully", room: newRoom });
     } catch (error) {
         res.status(500).json({ message: "Error creating room", error: error.message });
     }
 };
-
 // Get all Rooms
 exports.getRooms = async (req, res) => {
     try {
@@ -132,27 +143,6 @@ exports.deleteRoom = async (req, res) => {
 
 
 
-// Create a new room
-exports.createRoom = async (req, res) => {
-    try {
-        const { roomName, roomTeacher, roomCode, students, materials, assignments } = req.body;
-
-        const newRoom = new Room({
-            roomName,
-            roomTeacher,
-            roomCode,
-            students,
-            materials,
-            assignments
-        });
-
-        await newRoom.save();
-
-        res.status(201).json({ message: 'Room created successfully', room: newRoom });
-    } catch (error) {
-        res.status(500).json({ message: 'Error creating room', error: error.message });
-    }
-};
 
 // Add a student to an existing room
 exports.addStudentToRoom = async (req, res) => {
@@ -164,11 +154,11 @@ exports.addStudentToRoom = async (req, res) => {
             return res.status(400).json({ message: 'Refresh token is required' });
         }
 
-        const student = await User.findOne({refreshToken});
+        const student = await User.findOne({ refreshToken });
         if (!student) {
             return res.status(404).json({ message: 'Student not found' });
         }
-        
+
         const room = await Room.findById(roomId);
         if (!room) {
             return res.status(404).json({ message: 'Room not found' });
@@ -179,13 +169,17 @@ exports.addStudentToRoom = async (req, res) => {
             await room.save();
         }
 
-        res.status(200).json({ message: 'Student added successfully', room });
+        if (!student.rooms.includes(room.roomCode)) {
+            student.rooms.push(room.roomCode);
+            await student.save();
+        }
+
+        res.status(200).json({ message: 'Student added successfully to the room', room });
     } catch (error) {
-        console.log(error)
+        console.log(error);
         res.status(500).json({ message: 'Error adding student', error: error.message });
     }
 };
-
 exports.addMaterialToRoom = async (req, res) => {
     try {
         const { roomId } = req.params;

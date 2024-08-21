@@ -11,6 +11,10 @@ const TeacherSchema = new Schema({
         type: String,
         default:"teacher"
     },
+    rooms: [{
+        type: String,
+        ref: 'Room'
+    }],
     refreshToken: {
         type: String,
         default: null

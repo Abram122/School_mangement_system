@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs'); 
+const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 
@@ -15,7 +15,7 @@ const userSchema = new mongoose.Schema({
     email: {
         type: String,
         required: [true, 'Email is required.'],
-        unique: [true,"this email is already in use"],
+        unique: [true, "This email is already in use"],
         trim: true,
         lowercase: true,
         match: [/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, 'Please enter a valid email address.']
@@ -36,7 +36,7 @@ const userSchema = new mongoose.Schema({
     },
     verified: {
         type: String,
-        default:''
+        default: ''
     },
     token: {
         type: String,
@@ -46,6 +46,10 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: null
     },
+    rooms: [{
+        type: String,
+        ref: 'Room'
+    }],
     createdAt: {
         type: Date,
         default: Date.now
@@ -65,16 +69,17 @@ userSchema.methods.comparePassword = async function (enteredPassword) {
     return await bcrypt.compare(enteredPassword, this.password);
 };
 
-
 userSchema.methods.generateAuthToken = function () {
     const token = jwt.sign({ _id: this._id, name: this.name }, process.env.JWT_SECRET, { expiresIn: '15m' }); // Access token valid for 15 minutes
     return token;
 };
 
+
 userSchema.methods.generateRefreshToken = function () {
-    const refreshToken = crypto.randomBytes(40).toString('hex'); // Generate a random refresh token
+    const refreshToken = crypto.randomBytes(40).toString('hex'); 
     return refreshToken;
 };
+
 const User = mongoose.model('User', userSchema);
 
 module.exports = User;
