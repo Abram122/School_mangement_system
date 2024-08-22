@@ -1,6 +1,0 @@
-in client 
-npm i 
-npm start 
-in server 
-npm i 
-npm start s
