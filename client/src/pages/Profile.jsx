@@ -43,7 +43,6 @@ const Profile = () => {
                         </div>
                         <div className="md:flex flex-wrap gap-4 items-center py-3">
                             <div className="profile-img md:w-[33%] text-center">
-                                    <p>{`${process.env.REACT_APP_HOST_SERVER}images/${data.profileImage}`}</p>
                                     <img src={`${process.env.REACT_APP_HOST_SERVER}images/${data.profileImage}`} alt="" className="w-32 h-32 rounded-full m-auto border-yellow-600 p-1 border-2" />
                             </div>
                             <div className="profile-info md:w-[60%]">

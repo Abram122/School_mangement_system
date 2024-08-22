@@ -105,7 +105,7 @@ const sendContactEmail = async (contact_name, contact_phone, message) => {
                     <td style="padding: 8px; border: 1px solid #ddd;">${contact_name}</td>
                 </tr>
                 <tr>
-                    <td style="padding: 8px; border: 1px solid #ddd;">Contact Phone</td>
+                    <td style="padding: 8px; border: 1px solid #ddd;">Contact Email</td>
                     <td style="padding: 8px; border: 1px solid #ddd;">${contact_phone}</td>
                 </tr>
                 <tr>
